@@ -24,7 +24,16 @@ h_high_old = 1
 s_high_old = 1
 v_high_old = 1
 # Set camera
-camera1 = cv2.VideoCapture(0)
+camera1 = cv2.VideoCapture(1)
+
+cv2.namedWindow('image',cv2.WINDOW_NORMAL)
+# Create Trackbar
+cv2.createTrackbar('H LOW','image',0,255,nothing)
+cv2.createTrackbar('S LOW','image',0,255,nothing)
+cv2.createTrackbar('V LOW' ,'image',0,255,nothing)
+cv2.createTrackbar('H HIGH','image',0,255,nothing)
+cv2.createTrackbar('S HIGH','image',0,255,nothing)
+cv2.createTrackbar('V HIGH' ,'image',0,255,nothing)
 
 while(1):
     # Get the image
@@ -46,13 +55,6 @@ while(1):
     ret,thresh_window=cv2.threshold(gray_window,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
 
     cv2.imshow('image',thresh_window)
-    # Create Trackbar
-    cv2.createTrackbar('H LOW','image',0,255,nothing)
-    cv2.createTrackbar('S LOW','image',0,255,nothing)
-    cv2.createTrackbar('V LOW' ,'image',0,255,nothing)
-    cv2.createTrackbar('H HIGH','image',0,255,nothing)
-    cv2.createTrackbar('S HIGH','image',0,255,nothing)
-    cv2.createTrackbar('V HIGH' ,'image',0,255,nothing)
     # Get the value from the track bar
     h_low_new = cv2.getTrackbarPos('H LOW','image')
     s_low_new = cv2.getTrackbarPos('S LOW','image')
@@ -74,6 +76,7 @@ while(1):
     h_high_old = h_high_new
     s_high_old = s_high_new
     v_high_old = v_high_new
+    
     # Manual breakpoint
     k=cv2.waitKey(1)&0xFF
     if k==27:break

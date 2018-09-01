@@ -7,7 +7,7 @@ import numpy as np
 #Flag = 4 means the Wind tunnel entry mission
 #Flag = 5 means the Wind tunnel with hoops mission
 #Flag = 6 means the landing mission
-Flag_mission = 5
+Flag_mission = 1
 
 # This is for choose the centroid
 # Record flags
@@ -82,6 +82,8 @@ def distance( a_x , a_y , b_x , b_y ):
 # Set the boundary value for the window background
 window_bottom = np.array([20,100,20])
 window_top = np.array([220,255,220])
+#window_bottom = np.array([25,46,20])
+#window_top = np.array([41,255,220])
 # For Window mission
 Max_area_window = 150000
 Min_area_window = 50000
@@ -256,7 +258,7 @@ while(1):
     weight_loop = 0
     # Window code starts here...
     if Flag_mission == 1:
-        
+        '''
         break
         '''
         # BGR Transform to HSV
@@ -334,13 +336,13 @@ while(1):
                 del centroid_normal_y[:]
                 
         # Image show (For test)
-        cv2.imshow('Window',blur_1)
+        cv2.imshow('Window',hsv_1)
         cv2.imshow('Window Threshold',thresh_window)
         # Time recorder
         Truetime = Truetime + 1
         if cv2.waitKey(1) & 0xFF == ord('q'): test_switch = 1
         if test_switch: cv2.destroyAllWindows()
-    '''
+    
     # Mission Checkpoint 1
     
     # Poles and Rope code starts here...
@@ -452,7 +454,7 @@ while(1):
     
     # Wind tuunel with loops code starts here...
     if Flag_mission == 5:
-        '''
+        
         break
         '''
         # Delete when run the whole programme
@@ -536,7 +538,7 @@ while(1):
         cv2.imshow('Loop Threshold',thresh_loop)
         if cv2.waitKey(1) & 0xFF == ord('q'): test_switch = 1
         if test_switch: cv2.destroyAllWindows()
-        
+        '''
     # Mission Checkpoint 5
     
     # Landing code starts here...

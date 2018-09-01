@@ -1,0 +1,11 @@
+# Camera calibration 
+camera_fx: 378.6916618866226
+camera_fy: 378.6916618866226
+
+# stereo baseline times fx    base=0.06
+camera_bf: 24.9
+
+# camera topic to subscribe
+camera_topic: '/image_raw'
+camera_topic_left: '/camera/left/image_raw'
+camera_topic_right: '/camera/right/image_raw'
