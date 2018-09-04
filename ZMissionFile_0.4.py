@@ -80,8 +80,8 @@ def distance( a_x , a_y , b_x , b_y ):
     return distance
 # Boundary values:
 # Set the boundary value for the window background
-window_bottom = np.array([20,100,20])
-window_top = np.array([220,255,220])
+window_bottom = np.array([18,53,0])
+window_top = np.array([32,255,255])
 #window_bottom = np.array([25,46,20])
 #window_top = np.array([41,255,220])
 # For Window mission
@@ -490,7 +490,7 @@ while(1):
         if Truetime >= 5 and centroid_x:
             # length of normal/abnormal array
             length_normal = len(centroid_normal_x)
-            length_abnormal = len(centroid_abnormal_x)
+            length_abnormal = len(centroid_abnormal_x)centroid_origin_y
             print(flag_centroid)
             print(length_abnormal)
             # Judgement

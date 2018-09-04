@@ -24,7 +24,7 @@ h_high_old = 1
 s_high_old = 1
 v_high_old = 1
 # Set camera
-camera1 = cv2.VideoCapture(1)
+camera1 = cv2.VideoCapture(0)
 
 cv2.namedWindow('image',cv2.WINDOW_NORMAL)
 # Create Trackbar
@@ -42,18 +42,19 @@ while(1):
     window_bottom = np.array([h_low_new,s_low_new,v_low_new])
     window_top = np.array([h_high_new,s_high_new,v_high_new])
     # BGR Transform to HSV
-    blur_1 = cv2.GaussianBlur(frame_1,(5,5),0)
-    hsv_1 = cv2.cvtColor(blur_1,cv2.COLOR_BGR2HSV)
+    #blur_1 = cv2.GaussianBlur(frame_1,(5,5),0)
+    hsv_1 = cv2.cvtColor(frame_1,cv2.COLOR_BGR2HSV)
     # Build the mask for the window
     mask_window = cv2.inRange(hsv_1,window_bottom,window_top)
     # Bitwise operation
     res_window = cv2.bitwise_and(frame_1,frame_1,mask = mask_window)
-    blur_window = cv2.GaussianBlur(res_window,(5,5),0)
+    #blur_window = cv2.GaussianBlur(res_window,(5,5),0)
     # BGR to GRAY
-    gray_window = cv2.cvtColor(blur_window, cv2.COLOR_BGR2GRAY)
+    gray_window = cv2.cvtColor(res_window, cv2.COLOR_BGR2GRAY)
     # Threshold
     ret,thresh_window=cv2.threshold(gray_window,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-
+    thresh_window = cv2.morphologyEx(thresh_window, cv2.MORPH_OPEN, kernel = np.ones((3,3), np.uint8))
+    cv2.imshow('image_raw', frame_1)
     cv2.imshow('image',thresh_window)
     # Get the value from the track bar
     h_low_new = cv2.getTrackbarPos('H LOW','image')

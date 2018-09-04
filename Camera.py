@@ -62,10 +62,13 @@ class Camera (object):
         # Threshold
         ret, self.image_thre = cv.threshold(self.image_gray,0,255,
                                             cv.THRESH_BINARY_INV+cv.THRESH_OTSU)
-
+        self.image_thre = cv.morphologyEx(self.image_thre, cv.MORPH_OPEN, 
+                                            kernel = np.ones((3,3), np.uint8))
+        
     # get the contours and hierarchy. the last two params can be changed to speed up
     def Get_contours(self):
-        image, self.contours, self.hierarchy = cv.findContours(self.image_thre,
+        image_contours = self.image_thre
+        image, self.contours, self.hierarchy = cv.findContours(image_contours,
                                         cv.RETR_TREE,cv.CHAIN_APPROX_NONE)
 
 
@@ -75,6 +78,7 @@ class Camera (object):
         cv.drawContours(image_contours, self.contours, -1,
                                         (0,0,255), 3)
         cv.imshow('image_contours', image_contours)
+
 
     def Show_image_color(self, window_name = 'image_color'):
         cv.imshow(window_name, self.image_color)
