@@ -1,0 +1,101 @@
+# -*- coding: utf-8 -*-
+"""
+Created on  Jun 16 14:28:26 2016
+
+@author: Ankit Singh
+"""
+from PatternFinding import PatternFinding
+from FindingOrientationOfContours import FindingOrientationOfContours
+from AffineTransformation import AffineTransformation
+#import numpy as np
+
+import cv2 as cv
+import os.path
+
+
+class Imagehandler(object):
+    #def __init__(self, path):
+    #    if os.path.exists(path) and os.path.isfile(path):
+    #        self.ImagePath = path
+    #    else:
+    #        raise OSError('Invalid path specified in `config.yml`.')
+
+    def __init__(self, img):
+        self.Image = img
+
+    #将读入的图像转换成灰度图和二值化
+    def __convertImagetoBlackWhite(self):
+        #self.Image = cv.imread(self.ImagePath, cv.IMREAD_COLOR)
+        self.imageOriginal = self.Image
+        if self.Image is None:
+            print ('some problem with the image')
+        else:
+            print ('Image Loaded')
+
+        self.Image = cv.cvtColor(self.Image, cv.COLOR_BGR2GRAY)
+        self.Image = cv.adaptiveThreshold(
+            self.Image,
+            255,                    # Value to assign
+            cv.ADAPTIVE_THRESH_MEAN_C,# Mean threshold
+            cv.THRESH_BINARY,
+            11,                     # Block size of small area
+            2,                      # Const to substract
+        )
+
+        return self.Image
+
+    def WritingImage(self, image, imageName):
+        if image is None:
+            print ('Image is not valid.Please select some other image')
+        else:
+            #image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+            #print (path + imageName)
+            #cv.imwrite(path + imageName, image)
+            cv.imshow(imageName, image)
+            cv.waitKey(0)
+            cv.destroyAllWindows()
+
+    def GetImageContour(self):
+        thresholdImage = self.__convertImagetoBlackWhite()  #B & W with adaptive threshold
+        thresholdImage = cv.Canny(thresholdImage, 100, 200) #Edges by canny edge detection
+        #这里获得了图像中的轮廓，对二值化要求较高，并要求了轮廓的层次结构
+        thresholdImage, contours, hierarchy = cv.findContours(
+            thresholdImage, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        self.Contours = contours
+        # uncomment this to see the contours on the image
+        # cv2.drawContours(thresholdImage, contours, -1, (0,255,0), 3)
+        # patternFindingObj=PatternFinding()
+        # areas= [cv.contourArea(contour) for contour in contours]
+        # for index in xrange(len(contours)):
+        #     IsPattern=self.IsPossibleQRContour(index)
+        #     if IsPattern is True:
+        #         x,y,w,h=cv.boundingRect(contours[index])
+        #         cv.rectangle(self.imageOriginal,(x,y),(x+w,y+h),(0,0,255),2)
+        #         cv.imshow("hello",self.imageOriginal)
+        # maxAreaIndex=np.argmax(areas)
+        # x,y,w,h=cv.boundingRect(contours[maxAreaIndex])
+        # cv.rectangle(self.image2,(x,y),(x+w,y+h),(0,255,0),2)
+        # cv.imshow("hello",self.imageOriginal)
+        # cv.waitKey(0)
+        #cv.destroyAllWindows()
+        contour_group = (thresholdImage, contours, hierarchy)
+        return contour_group
+
+    def QRCodeInImage(self):
+        patternFindingObj = PatternFinding(
+            self.GetImageContour(), self.imageOriginal)
+        patterns = patternFindingObj.FindingQRPatterns(3)
+        if len(patterns) == 0:
+            print ('patterns unable to find')
+        contourA = patterns[0]
+        contourB = patterns[1]
+        contourC = patterns[2]
+        orientationObj = FindingOrientationOfContours()
+        Right, Bottom, Top = orientationObj.FindOrientation(
+            contourA, contourB, contourC)
+        print ('Right: {}'.format(Right))
+        print ('Bottom: {}'.format(Bottom))
+        print ('Top: {}'.format(Top))
+        affineTransformObj = AffineTransformation(self.imageOriginal)
+        self.TransformImage = affineTransformObj.Transform(Top, Right, Bottom)
+        return self.TransformImage

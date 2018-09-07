@@ -70,7 +70,7 @@ class Camera (object):
         image_contours = self.image_thre
         image, self.contours, self.hierarchy = cv.findContours(image_contours,
                                         cv.RETR_TREE,cv.CHAIN_APPROX_NONE)
-
+        #self.Show_image_thre()
 
     # some methods to show image
     def Show_contours(self):
@@ -92,12 +92,3 @@ class Camera (object):
     def Show_image_thre(self, window_name = 'image_thre'):
         cv.imshow(window_name, self.image_thre)
                                             
-                                            
-
-
-
-
-
-
-
-    

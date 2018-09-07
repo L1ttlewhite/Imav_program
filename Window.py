@@ -18,6 +18,7 @@ class Windowhandler(Camera):
         self.Truetime = 0       
         self.center_x, self.center_y = 0,0
         self.find_center_flag = False
+        self.isRectangle = False
         self.center_x_old, self.center_y_old = 0,0
         # define by XJ in his method
         self.center_filter_normal_x = []
@@ -38,34 +39,56 @@ class Windowhandler(Camera):
             return center_x,center_y
         else:return 0,0
 
-
-        
-
     #判断矩形的方法来实现找窗户的中心
-    #严格判断矩形，pt0-pt2为矩形任意三个定点
+    #严格判断矩形，pt0-pt2为矩形任意三个定点，但对旋转的鲁棒性不强
     def Check_rectangle(self, center_x, center_y, pt0, pt2):
-        yuzhi = 20
+        #一个可调阈值，取大是为了，在方形旋转，变成菱形时可以正确检测出
+        yuzhi = 50
         dx = abs(pt0[0]-pt2[0])
         dy = abs(pt0[1]-pt2[1])
         try:
-            #判断所选轮廓外围是否为黑色，确定是否为船户轮廓
-            check_num = np.sum(self.image_thre[int(center_y+dy/2+yuzhi),
-                        int(center_x-dx/2-yuzhi):int(center_x+dx/2+yuzhi)])+np.sum(self.image_thre[int(center_y-dy/2-yuzhi),
-                        int(center_x-dx/2-yuzhi):int(center_x+dx/2+yuzhi)])+np.sum(self.image_thre[int(center_y-dy/2-yuzhi):int(center_y+dy/2+yuzhi),
-                        int(center_x+dx/2+yuzhi)])+np.sum(self.image_thre[int(center_y-dy/2-yuzhi):int(center_y+dy/2+yuzhi),
-                        int(center_x-dx/2-yuzhi)])        
+            #判断所选轮廓外围是否为黑色，确定是否为窗户轮廓     
+            check_num_1 = np.sum(self.image_thre[int(center_y+dy/2+yuzhi),int(center_x-dx/2-yuzhi):int(center_x+dx/2+yuzhi)])
+            check_num_2 = np.sum(self.image_thre[int(center_y-dy/2-yuzhi),int(center_x-dx/2-yuzhi):int(center_x+dx/2+yuzhi)])
+            check_num_3 = np.sum(self.image_thre[int(center_y-dy/2-yuzhi):int(center_y+dy/2+yuzhi),int(center_x+dx/2+yuzhi)])
+            check_num_4 = np.sum(self.image_thre[int(center_y-dy/2-yuzhi):int(center_y+dy/2+yuzhi),int(center_x-dx/2-yuzhi)])  
         except:
-            check_num = 100
+            check_num_1 = 100
+            check_num_2 = 100
+            check_num_3 = 100
+            check_num_4 = 100
             print 'error'
         
+        print check_num_1, check_num_2, check_num_3, check_num_4
         #print self.image_thre[340][430], self.image_thre[430][340]
-        if check_num < 10 :
-            self.find_center_flag = True
+        if check_num_1 < 10 and check_num_2 < 10 and check_num_3 < 10 and check_num_4 <10:
+            self.isRectangle = True
         else:
-            self.find_center_flag = False
+            self.isRectangle = False
+    
+    #测试发现矩形对旋转的鲁棒性不佳，采用外接圆来判断
+    def checkcontour(self, con):
+        (x,y), radius = cv.minEnclosingCircle(con)
+        try:    
+            check_num_1 = self.image_thre[y][x-radius]
+            check_num_2 = self.image_thre[y][x+radius]
+            check_num_3 = self.image_thre[y-radius][x]
+            check_num_4 = self.image_thre[y+radius][x]
+        except:
+            check_num_1 = 100
+            check_num_2 = 100
+            check_num_3 = 100
+            check_num_4 = 100
+            print 'error'
+            
+        #print check_num_1, check_num_2, check_num_3, check_num_4
+        #print self.image_thre[340][430], self.image_thre[430][340]
+        if check_num_1 == 0 and check_num_2 == 0 and check_num_3 == 0 and check_num_4 == 0:
+            self.isRectangle = True
+        else:
+            self.isRectangle = False
 
-
-    #检测直角
+    #找窗户的主函数
     def Window_Find(self, delta = 0.7, epsilon = 0.01, minangle = 80, maxangle = 100):
         self.contours_window = []
         x_weight, y_weight = 0,0
@@ -86,29 +109,46 @@ class Windowhandler(Camera):
                             if y_weight:
                                 center_x,center_y = self.Center_calculator(x_weight,
                                                                 y_weight, weight)
-                                self.Check_rectangle(center_x, center_y, approx[0][0], approx[2][0])
-                            #if self.find_center_flag :
-                                center.append(np.array([center_x,center_y]))
-                                self.contours_window.append(con)
-                            
-                                print approx
-                            else:
-                                self.find_center_flag = False
+                                #self.Check_rectangle(center_x, center_y, approx[0][0], approx[2][0])
+                                self.checkcontour(con)
+                                if self.isRectangle:
+                                    center.append(np.array([center_x,center_y]))
+                                    self.contours_window.append(con)
+                                #else:
+                                    #print approx
+                            #else:
+                            #    self.find_center_flag = False
         return self.contours_window, center
 
-    def WindowFinding(self):
-        
+
+    def WindowFinding(self): 
         if len(self.contours) == 0:
             print ('no self.contours_window in image')
+            self.center_x = 0
+            self.center_y = 0
+            self.find_center_flag = False
         else:
             self.contours_window, center = self.Window_Find()
             #print len(self.contours_window),center,len(center)
-            if len(self.contours_window) > 0 and self.find_center_flag : 
+            if len(center) > 0 :
+                self.find_center_flag = True 
                 if len(center) == 1:    
                     self.center_x = center[0][0]
                     self.center_y = center[0][1]
-                    #print self.center_x,self.center_y            
-                print ('the center of self.contours_window is  : {}'.format(center))
+                    #print self.center_x,self.center_y 
+                else:
+                    center_sum = np.zeros(len(center))
+                    for i in range(len(center_sum)):
+                        center_sum[i] = abs(center[i][0]) + abs(center[i][1]-240)
+                    idx = np.argmax(center_sum)
+                    self.center_x = center[idx][0]
+                    self.center_y = center[idx][1]          
+                #print ('the center of self.contours_window is  : {}'.format(center))
+            else:
+                self.find_center_flag = False
+                self.center_x = 0
+                self.center_y = 0
+
 
     def isFind(self):
         return self.find_center_flag
@@ -124,7 +164,6 @@ class Windowhandler(Camera):
         cv.imshow(window_name, image_contours_window)
         #cv.waitKey(0)
 
-
     def Get_centerid(self):
         return self.center_x, self.center_y    
     
@@ -132,6 +171,16 @@ class Windowhandler(Camera):
     
     
     
+
+
+
+
+
+
+
+
+
+    #not used
     #以下代码在算全局的轮廓矩，上面的是基于提取颜色框，找中间的框的算法
     def Find_center(self): 
         x_weight = 0
