@@ -2,10 +2,25 @@
 camera_fx: 443
 camera_fy: 443
 
-# stereo baseline times fx    base=0.06
-camera_bf: 60
+# stereo baseline 0.06m
+camera_bl: 60
+
+# camera mode and video_num. mode: 0 for video 1 for topic. 
+camera_mode: 1
+camera_video_num: 0
 
 # camera topic to subscribe
 camera_topic: '/image_raw'
 camera_topic_left: '/left/image_rect_color'
 camera_topic_right: '/right/image_rect_color'
+
+#window
+window_hsv_low: 
+  - 6
+  - 47
+  - 0
+window_hsv_high:
+  - 56
+  - 255
+  - 255
+

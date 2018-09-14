@@ -66,8 +66,8 @@ while not rospy.is_shutdown():
     #     cv.waitKey(1)
     if window_L.isOpen() and window_R.isOpen():
         start = time.time()
-        window_L.Process_image(HSV_low = window_bottom,HSV_high = window_top)
-        window_R.Process_image(HSV_low = window_bottom,HSV_high = window_top)
+        window_L.Process_image_HSV(HSV_low = window_bottom,HSV_high = window_top)
+        window_R.Process_image_HSV(HSV_low = window_bottom,HSV_high = window_top)
         window_L.Get_contours()
         window_R.Get_contours()
         window_L.WindowFinding()

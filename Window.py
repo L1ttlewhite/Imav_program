@@ -9,9 +9,9 @@ from Camera import Camera
 
 class Windowhandler(Camera):
     
-    def __init__(self, mode = 0, video_num = 0, video_topic = "/image_raw"):
+    def __init__(self, mode = 0, video_num = 0, video_topic = "/image_raw", image_path = ''):
         #super(Windowhandler,self).__init__( mode = 0, video_num = 0, video_topic = "/image_raw")
-        super(Windowhandler,self).__init__( mode, video_num, video_topic)
+        super(Windowhandler,self).__init__( mode, video_num, video_topic, image_path)
         self.Maxdistance = 100
         self.max_area = 200000
         self.min_area = 10000
@@ -167,10 +167,18 @@ class Windowhandler(Camera):
     def Get_centerid(self):
         return self.center_x, self.center_y    
     
+    def Stereo_center(self, x1, y1, x2, y2, fx, fy, bl):
+        x,y,z = 0,0,0
+        if x1 and y1 and x2 and y2:
+            print abs(x1-x2)
+            if abs(x1-x2) <= 50: 
+                z = fx * bl / (x1 - x2)
+                x = x1 * z / fx
+                y = y1 * z / fy
+        return x, y, z 
     
     
     
-    
 
 
 
@@ -179,7 +187,7 @@ class Windowhandler(Camera):
 
 
 
-
+'''
     #not used
     #以下代码在算全局的轮廓矩，上面的是基于提取颜色框，找中间的框的算法
     def Find_center(self): 
@@ -280,3 +288,4 @@ class Windowhandler(Camera):
             cv.circle(image_contours_window_step, (center_x, center_y), 10
                             (0,0,255), -1)
             cv.imshow(window_name, image_contours_window_step)
+'''
