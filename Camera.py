@@ -23,9 +23,10 @@ class Camera (object):
         elif mode == 2:
             print image_path
             self.image_color = cv.imread(image_path)
-            
+        elif mode == 3:
+            self.capture = cv.VideoCapture(image_path)    
         else:
-            print ('Wrong camera mode. Please choose 1 for video or 2 for topic or 3 for file.')
+            print ('Wrong camera mode. Please choose 1 for video or 2 for topic or 3 for file or 4 for video file.')
 
     def Release(self):
         self.capture.release()
