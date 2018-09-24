@@ -14,7 +14,7 @@ class Windowhandler(Camera):
         super(Windowhandler,self).__init__( mode, video_num, video_topic, image_path)
         self.Maxdistance = 100
         self.max_area = 200000
-        self.min_area = 10000
+        self.min_area = 3000
         self.Truetime = 0       
         self.center_x, self.center_y = 0,0
         self.find_center_flag = False
@@ -69,11 +69,13 @@ class Windowhandler(Camera):
     #测试发现矩形对旋转的鲁棒性不佳，采用外接圆来判断
     def checkcontour(self, con):
         (x,y), radius = cv.minEnclosingCircle(con)
-        try:    
+        try:  
+            #print x,y,radius
+            #cv.waitKey(0)  
             check_num_1 = self.image_thre[y][x-radius]
             check_num_2 = self.image_thre[y][x+radius]
-            check_num_3 = self.image_thre[y-radius][x]
-            check_num_4 = self.image_thre[y+radius][x]
+            check_num_3 = self.image_thre[int(y-radius/1.2)][x]
+            check_num_4 = self.image_thre[int(y+radius/1.2)][x]
         except:
             check_num_1 = 100
             check_num_2 = 100
@@ -84,6 +86,8 @@ class Windowhandler(Camera):
         #print check_num_1, check_num_2, check_num_3, check_num_4
         #print self.image_thre[340][430], self.image_thre[430][340]
         if check_num_1 == 0 and check_num_2 == 0 and check_num_3 == 0 and check_num_4 == 0:
+            #print x,y,radius
+            #cv.waitKey(0)
             self.isRectangle = True
         else:
             self.isRectangle = False

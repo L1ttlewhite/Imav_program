@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import time
 import yaml,os
 import rospy 
@@ -25,18 +26,22 @@ while True:
     start = time.time()
     Line.Process_image_Thre(thre = thre)
     Line.Show_image_thre()
-    Line.Find_blobs()
-    line = Line.Find_line()
+    Line.Get_contours()
+    Line.Show_longest_con()
+    #Line.Find_blobs()
+    
+    #line = Line.Find_line()
     #print line 
     img = Line.Get_image_color().copy()
-    Line.Draw_blobs()
-    if line:
-        cv.line(img, (line[0][1],line[0][0]), (line[-1][1],line[-1][0]), (0,0,255), 10)
+    #Line.Draw_blobs()
+    #if line:
+    #    cv.line(img, (line[0][1],line[0][0]), (line[-1][1],line[-1][0]), (0,0,255), 10)
+    
     cv.imshow('img', img)
     end   = time.time()
     print end - start
     #cv.waitKey(0)
-    if cv.waitKey(1) & 0xFF == ord('q'):
+    if cv.waitKey(20) & 0xFF == ord('q'):
         break
 
 

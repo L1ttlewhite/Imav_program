@@ -7,6 +7,8 @@ import yaml,os
 import rospy
 from Camera import Camera
 from Window import Windowhandler
+from geometry_msgs.msg import Point
+
 
 def filter(x_new, x_old):
     a = 0.8
@@ -49,9 +51,10 @@ array_count = 0
 
 
 
-
-window_bottom = np.array([6,47,0])
-window_top = np.array([56,255,255])
+point_pub = rospy.Publisher('uav_position', Point, queue_size=1)
+point = Point()
+window_bottom = np.array([21,33,132])
+window_top = np.array([65,255,255])
 rospy.init_node('image_handler', anonymous = True)
 window_L = Windowhandler(mode = 1, video_num = 0, video_topic = camera_topic_left)    
 window_R = Windowhandler(mode = 1, video_num = 0, video_topic = camera_topic_right)
@@ -59,10 +62,12 @@ window_R = Windowhandler(mode = 1, video_num = 0, video_topic = camera_topic_rig
 while not rospy.is_shutdown():
     # window.Cap_image()
     # if window.isOpen():
-    #     window.Process_image(HSV_low = window_bottom, HSV_high = window_top)
+    #     window.Process_image_HSV(HSV_low = window_bottom, HSV_high = window_top)
     #     window.Get_contours()
     #     window.WindowFinding()
     #     window.Show_contours_window()
+    #     x1,y1 = window.Get_centerid()
+    #     print x1,y1
     #     cv.waitKey(1)
     if window_L.isOpen() and window_R.isOpen():
         start = time.time()
@@ -72,13 +77,21 @@ while not rospy.is_shutdown():
         window_R.Get_contours()
         window_L.WindowFinding()
         window_R.WindowFinding()
-        #window.Show_contours()
+        window_L.Show_image_thre('image_left_thre')
+        window_R.Show_image_thre('image_right_thre')
+        #window_L.Show_contours()
         window_L.Show_contours_window('image_left')
         window_R.Show_contours_window('image_right')
         if window_L.isFind() and window_R.isFind():
             x1,y1 = window_L.Get_centerid()
             x2,y2 = window_R.Get_centerid()
+            x1 = x1-160
+            y1 = y1-120
+            x2 = x2-160
+            y2 = y2-120
             x,y,z = stereo_center(x1, y1, x2, y2, camera_fx, camera_fy, camera_bf)
+            x = x -30
+            '''
             if x and y and z:
                 array_x1[array_count] = x1
                 array_y1[array_count] = y1
@@ -99,6 +112,11 @@ while not rospy.is_shutdown():
                 print ("mean and var of y is : {}, {}".format(array_y.mean(), array_y.var()))
                 print ("mean and var of z is : {}, {}".format(array_z.mean(), array_z.var()))
                 cv.waitKey(0)
+                '''
+            point.x = z
+            point.y = x
+            point.z = y
+            point_pub.publish(point)
             print x1,y1,x2,y2
             print x,y,z
             #cv.waitKey(0) 

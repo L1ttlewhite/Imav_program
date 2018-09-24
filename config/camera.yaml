@@ -1,9 +1,9 @@
 # Camera calibration 
-camera_fx: 443
-camera_fy: 443
+camera_fx: 212
+camera_fy: 212
 
 # stereo baseline 0.06m
-camera_bl: 60
+camera_bf: 60
 
 # camera mode and video_num. mode: 0 for video 1 for topic. 
 camera_mode: 1

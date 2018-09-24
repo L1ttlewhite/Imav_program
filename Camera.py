@@ -77,19 +77,24 @@ class Camera (object):
         self.image_gray = cv.cvtColor(self.image_color,cv.COLOR_BGR2GRAY)
         #这个函数，thre_new 代表阈值，255代表超过阈值后的像素的值，也可以修改第四个参数为cv2.THRESH_OTSU 使其自动二值化
         #黑线找出来，其余为白色
-        ret,thresh_window=cv.threshold(self.image_gray, thre, 255, cv.THRESH_BINARY)
+        gray_image = self.image_gray.copy()
+        ret,thresh_window=cv.threshold(gray_image, thre, 255, cv.THRESH_BINARY)
         self.image_thre = cv.morphologyEx(thresh_window, cv.MORPH_OPEN, kernel = np.ones((3,3), np.uint8))
 
     # get the contours and hierarchy. the last two params can be changed to speed up
     def Get_contours(self):
-        image_contours = self.image_thre
+        image_contours = self.image_thre.copy()
+        image_contours[0:10,:] = 255
+        image_contours[470:480,:] = 255
+        image_contours[:,0:10] = 255
+        image_contours[:,630:640] = 255
         image, self.contours, self.hierarchy = cv.findContours(image_contours,
                                         cv.RETR_TREE,cv.CHAIN_APPROX_NONE)
         #self.Show_image_thre()
 
     # some methods to show image
     def Show_contours(self):
-        image_contours = self.image_color
+        image_contours = self.image_color.copy()
         cv.drawContours(image_contours, self.contours, -1,
                                         (0,0,255), 3)
         cv.imshow('image_contours', image_contours)

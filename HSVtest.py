@@ -24,7 +24,9 @@ h_high_old = 1
 s_high_old = 1
 v_high_old = 1
 # Set camera
-camera1 = cv2.VideoCapture(1)
+camera1 = cv2.VideoCapture(0)
+
+#frame_1 = cv2.imread('data/loop2.png')
 
 cv2.namedWindow('image',cv2.WINDOW_NORMAL)
 # Create Trackbar
