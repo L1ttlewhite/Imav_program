@@ -11,8 +11,8 @@ camera_video_num: 0
 
 # camera topic to subscribe
 camera_topic: '/image_raw'
-camera_topic_left: '/left/image_raw'
-camera_topic_right: '/right/image_raw'
+camera_topic_left: '/left/image_rect_color'
+camera_topic_right: '/right/image_rect_color'
 
 #window
 window_hsv_low: 

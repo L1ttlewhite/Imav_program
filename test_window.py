@@ -10,16 +10,10 @@ from Window import Windowhandler
 from geometry_msgs.msg import Point
 
 
-def filter(x_new, x_old):
-    a = 0.8
-    return ( x_new * a + (1 - a) * x_old )
-
-x_old, y_old, z_old = 0,0,0
-x_new, y_new, z_new = 0,0,0
 
 def stereo_center(x1, y1, x2, y2, fx, fy, bf):   
     x,y,z = 0,0,0
-    if x1 and y1 and x2 and y2:
+    if x1 or y1 or x2 or y2:
         print abs(x1-x2)
         if abs(x1-x2) <= 50: 
             z = fx * bf / (x1 - x2)
@@ -53,8 +47,8 @@ array_count = 0
 
 point_pub = rospy.Publisher('uav_position', Point, queue_size=1)
 point = Point()
-window_bottom = np.array([21,33,132])
-window_top = np.array([65,255,255])
+window_bottom = np.array([22,40,0])
+window_top = np.array([66,255,255])
 rospy.init_node('image_handler', anonymous = True)
 window_L = Windowhandler(mode = 1, video_num = 0, video_topic = camera_topic_left)    
 window_R = Windowhandler(mode = 1, video_num = 0, video_topic = camera_topic_right)
@@ -91,34 +85,14 @@ while not rospy.is_shutdown():
             y2 = y2-120
             x,y,z = stereo_center(x1, y1, x2, y2, camera_fx, camera_fy, camera_bf)
             x = x -30
-            '''
-            if x and y and z:
-                array_x1[array_count] = x1
-                array_y1[array_count] = y1
-                array_x2[array_count] = x2
-                array_y2[array_count] = y2
-                array_x1_x2[array_count] = abs(x1-x2)
-                array_x[array_count] = x
-                array_y[array_count] = y
-                array_z[array_count] = z
-                array_count = array_count + 1
-            if array_count == 500:
-                print ("mean and var of x1 is : {}, {}".format(array_x1.mean(), array_x1.var()))
-                print ("mean and var of y1 is : {}, {}".format(array_y1.mean(), array_y1.var()))
-                print ("mean and var of x2 is : {}, {}".format(array_x2.mean(), array_x2.var()))
-                print ("mean and var of y2 is : {}, {}".format(array_y2.mean(), array_y2.var()))
-                print ("mean and var of x1-x2 is : {}, {}".format(array_x1_x2.mean(), array_x1_x2.var()))
-                print ("mean and var of x is : {}, {}".format(array_x.mean(), array_x.var()))
-                print ("mean and var of y is : {}, {}".format(array_y.mean(), array_y.var()))
-                print ("mean and var of z is : {}, {}".format(array_z.mean(), array_z.var()))
-                cv.waitKey(0)
-                '''
+            y = y - 350
             point.x = z
             point.y = x
             point.z = y
             point_pub.publish(point)
-            print x1,y1,x2,y2
-            print x,y,z
+            print -x,y,z
+            #print ('the center of two window is : {}, {}, {}, {}',format(x1,y1,x2,y2))
+            #print ('the 3D point is : {}, {}, {}'.format(-x,y,z))
             #cv.waitKey(0) 
         end = time.time()
         #print end - start

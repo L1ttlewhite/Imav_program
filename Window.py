@@ -59,7 +59,7 @@ class Windowhandler(Camera):
             check_num_4 = 100
             print 'error'
         
-        print check_num_1, check_num_2, check_num_3, check_num_4
+        #print check_num_1, check_num_2, check_num_3, check_num_4
         #print self.image_thre[340][430], self.image_thre[430][340]
         if check_num_1 < 10 and check_num_2 < 10 and check_num_3 < 10 and check_num_4 <10:
             self.isRectangle = True
@@ -81,7 +81,7 @@ class Windowhandler(Camera):
             check_num_2 = 100
             check_num_3 = 100
             check_num_4 = 100
-            print 'error'
+            #print 'error, con is not a window'
             
         #print check_num_1, check_num_2, check_num_3, check_num_4
         #print self.image_thre[340][430], self.image_thre[430][340]
@@ -183,113 +183,3 @@ class Windowhandler(Camera):
     
     
     
-
-
-
-
-
-
-
-
-'''
-    #not used
-    #以下代码在算全局的轮廓矩，上面的是基于提取颜色框，找中间的框的算法
-    def Find_center(self): 
-        x_weight = 0
-        y_weight = 0
-        weight   = 0
-        self.contours_window = []
-        for contour in self.contours:
-            epsilon = 0.1*cv.arcLength(contour,True)
-            approx = cv.approxPolyDP(contour,epsilon,True)
-            if cv.contourArea(contour) >= self.min_area :
-                if cv.contourArea(contour) <= self.max_area :
-                    self.image_color = cv.drawContours(self.image_color, contour, -1, (255,0,0), 3)
-                    self.contours_window.append(contour)
-                    M = cv.moments(contour)
-                    x_weight = x_weight + int(M['m10'])
-                    y_weight = y_weight + int(M['m01'])
-                    weight = weight + int(M['m00'])
-            # Draw center
-            if x_weight:
-                if y_weight:
-                    self.center_x,self.center_y = self.Center_calculator(x_weight,
-                                                    y_weight, weight)
-                    if self.Truetime >= 3:
-                        if self.Distance(self.center_x, self.center_y, 
-                                self.center_x_old, self.center_y_old) < self.Maxdistance:
-                            self.center_x = ( self.center_x + self.center_x_old ) / 2
-                            self.center_y = ( self.center_y + self.center_y_old ) / 2 
-                            self.find_center_flag = True
-                        self.Truetime = 0
-                    
-                    else:
-                        self.find_center_flag = False
-                    self.center_x_old = self.center_x
-                    self.center_y_old = self.center_y
-                    self.Truetime = self.Truetime + 1 
-            self.Checktme = self.Checktme + 1 
-    
-    # method by XJ 
-    def Filter(self):
-        if self.Checktme >=5 and self.center_x:
-            length_normal = len(self.center_filter_normal_x)
-            length_abnormal = len(self.center_filter_abnormal_x)
-   
-            # Judgement
-            if self.center_flag == 0:
-                self.center_flag = 1
-                self.center_origin_x = self.center_x
-                self.center_origin_y = self.center_y
-            elif self.center_flag == 1:
-                self.center_nowaday_x = self.center_x
-                self.center_nowaday_y = self.center_y
-                if distance(self.center_origin_x, self.center_origin_y, self.center_nowaday_x, self.center_nowaday_y) < self.Maxdistance:
-                    self.center_filter_normal_x.append(self.center_nowaday_x)
-                    self.center_filter_normal_y.append(self.center_nowaday_y)
-                else :
-                    self.center_filter_abnormal_x.append(self.center_nowaday_x)
-                    self.center_filter_abnormal_y.append(self.center_nowaday_y)
-                if length_abnormal <= 2 and length_normal == 10:
-                    self.center_flag = 2
-                    self.center_final_x = int(sum(self.center_filter_normal_x)/(length_normal+1))
-                    self.center_final_y = int(sum(self.center_filter_normal_y)/(length_normal+1))
-                elif length_abnormal >= 10 and length_normal <= 2:
-                    self.center_flag = 0
-                elif length_abnormal >=10 and length_normal >= 10:
-                    self.center_flag = 3
-                else:
-                    self.center_flag = 0
-            # Job done, return value
-            elif self.center_flag == 2:
-                self.center_x = self.center_final_x
-                self.center_y = self.center_final_y
-            # I think the most excetutable method is move the plane
-            elif self.center_flag == 3:
-                self.center_flag = 0
-                del self.center_filter_abnormal_x[:]
-                del self.center_filter_abnormal_y[:]
-                del self.center_filter_normal_x[:]
-                del self.center_filter_normal_y[:]
-
-
-    #调试用，分步显示图中轮廓，×××未测试运行××××
-    def Show_contours_window_step(self, window_name = 'image_contours_window_step'):
-        image_contours_window_step = self.image_color
-        for contour_window in self.contours_window:
-            print contour_window
-            cv.drawContours(image_contours_window_step, contour_window, -1,
-                                    (0,0,255), 3)
-            M = cv.moments(contour)
-            x_weight = x_weight + int(M['m10'])
-            y_weight = y_weight + int(M['m01'])
-            weight = weight + int(M['m00'])
-            # Draw center
-            if x_weight:
-                if y_weight:
-                    center_x,center_y = self.Center_calculator(x_weight,
-                                                    y_weight, weight)
-            cv.circle(image_contours_window_step, (center_x, center_y), 10
-                            (0,0,255), -1)
-            cv.imshow(window_name, image_contours_window_step)
-'''

@@ -24,7 +24,7 @@ h_high_old = 1
 s_high_old = 1
 v_high_old = 1
 # Set camera
-camera1 = cv2.VideoCapture(0)
+camera1 = cv2.VideoCapture(1)
 
 #frame_1 = cv2.imread('data/loop2.png')
 
