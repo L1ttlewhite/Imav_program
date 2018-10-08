@@ -1,6 +1,16 @@
 # Camera calibration 
-camera_fx: 180
-camera_fy: 180
+
+#640
+camera_fx: 380.11939
+camera_fy: 380.11939
+camera_cx: 383.66979
+camera_cy: 255.713731
+
+#320
+#camera_fx: 179.51961970424955
+#camera_fy: 180.14811005619956
+#camera_cx: 174.2833669046884
+#camera_cy: 132.817497627893
 
 # stereo baseline 0.06m
 camera_bf: 60
@@ -11,8 +21,8 @@ camera_video_num: 0
 
 # camera topic to subscribe
 camera_topic: '/image_raw'
-camera_topic_left: '/left/image_raw'
-camera_topic_right: '/right/image_raw'
+camera_topic_left: '/camera/left/image_raw'
+camera_topic_right: '/camera/right/image_raw'
 
 #window
 window_hsv_low: 
